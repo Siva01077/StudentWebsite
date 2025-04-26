@@ -1,0 +1,30 @@
+﻿@model List<Student_Website.Models.CitiesModel>
+@using Student_Website.Models
+@{
+    Layout = null;
+}
+
+<table class="table table-bordered" border="1" align="center" id="tblstudents">
+    <thead>
+        <tr>
+            <th>CityID</th>
+
+            <th>CityName</th>
+            <th>DistrictName</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(CitiesModel obj in Model)
+        {
+            <tr>
+                <td>
+                    @obj.CityID
+                </td>
+                <td>@obj.CityName</td>
+                <td>@obj.DistrictName</td>
+
+            </tr>
+        }
+    </tbody>
+</table>

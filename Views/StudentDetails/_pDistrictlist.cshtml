@@ -1,0 +1,29 @@
+﻿@model List<Student_Website.Models.DistrictsModel>
+@using Student_Website.Models
+@{
+    Layout = null;
+}
+
+<table class="table table-bordered" border="1" align="center" id="tblstudents">
+    <thead>
+        <tr>
+            <th>DistrictID</th>
+            <th>DistrictName</th>
+            <th>StateName</th>
+            
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(DistrictsModel  obj in Model)
+        {
+            <tr>
+                <td>
+                    @obj.DistrictID
+            </td>
+            <td>@obj.DistrictName</td>
+            <td>@obj.StateName</td>
+            </tr>
+        }
+    </tbody>
+</table>

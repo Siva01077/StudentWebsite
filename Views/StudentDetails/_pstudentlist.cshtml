@@ -1,0 +1,44 @@
+﻿@model List<Student_Website.Models.StudentRegModel>
+@using Student_Website.Models
+@{
+    Layout = null;
+}
+
+<table class="table table-bordered" border="1" align="center" id="tblstudents">
+    <thead>
+        <tr>
+            <th>StudentId</th>
+            <th>StudentName</th>
+            <th>Email</th>
+            <th>Phone</th>
+
+            <th>Address</th>
+            <th>Gender</th>
+            
+            <th>StateName</th>
+            <th>DistrictName</th>
+            <th>CityName</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(StudentRegModel obj in Model)
+        {
+            <tr>
+                <td>@obj.StudentId</td>
+                <td>@obj.StudentName</td>
+                <td>@obj.Email</td>
+                <td>@obj.Phone</td>
+
+                <td>@obj.Address</td>
+                <td>@obj.Gender</td>
+                
+                <td>@obj.StateName</td>
+                <td>@obj.DistrictName</td>
+                <td>@obj.CityName</td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+

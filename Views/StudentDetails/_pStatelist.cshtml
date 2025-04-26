@@ -1,0 +1,24 @@
+﻿@model List<Student_Website.Models.StateModel>
+@using Student_Website.Models
+@{
+    Layout = null;
+}
+
+<table class="table table-bordered" border="1" align="center" id="tblstudents">
+    <thead>
+        <tr>
+            <th>StateID</th>
+            <th>StateName</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(StateModel obj in Model)
+        {
+            <tr>
+                <td>@obj.StateID</td>
+                <td>@obj.StateName</td>
+            </tr>
+        }
+    </tbody>
+</table>

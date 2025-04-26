@@ -1,0 +1,130 @@
+﻿@model Student_Website.Models.DistrictsModel
+@using Student_Website.Models
+
+<script>
+    $(document).ready(function () {
+        function LoadStudentData() {
+            $.ajax({
+                url: '/StudentDetails/GetDistrictlist',
+                type: 'GET',
+                success: function (result) {
+                    $('#divlist').html(result);
+                },
+                error: function (error) {
+                    alert("load to fial data");
+                }
+            });
+        }
+        $('#Districtsubmit').click(function () {
+            var StateID = $('#StateID').val();
+            var StateName = $('#StateName').val();
+            var DistrictName = $('#DistrictName').val();
+
+            
+            if (StateID == "") {
+                alert("Enter State Id");
+                return false;
+            } else if (StateName == "") {
+                alert("Enter StateName");
+                return false;
+            } else if (DistrictName == "") {
+                alert("Enter DistrictName");
+                return false;
+            }
+
+           
+            var Districtobj = {
+                "StateID": StateID,
+                "StateName": StateName,
+                "DistrictName": DistrictName
+            };
+
+            alert(
+                "StateID :" + Districtobj.StateID + "\n" +
+                "StateName:" + Districtobj.StateName + "\n" +
+                "DistrictName:" + Districtobj.DistrictName
+            );
+
+            $.ajax({
+                url: '@Url.Action("Districts", "StudentDetails")',
+                data: JSON.stringify(Districtobj),
+                type: "POST",
+                datatype: "json",
+                contentType: "application/json",
+                success: function (result) {
+                    if (result.success) {
+                        alert("Data saved successfully");
+                       
+                        location.reload();
+                    } else {
+                        alert("Data not saved successfully");
+                    }
+                },
+                error: function (error) {
+                    alert("Data insertion failed. Check console for details.");
+                    console.log(error);
+                }
+            });
+        });
+
+        $('#StateID').change( function () {
+            var stateId = $(this).val();
+            if (stateId) {
+                $.ajax({
+                    url: '@Url.Action("GetStateNameById", "StudentDetails")',
+                    type: 'GET',
+                    data: { stateId: stateId },
+                    success: function (result) {
+                        if (result.StateName) {
+                            
+                            $('#StateName').append('<option value="' + result.StateName + '">' + result.StateName + '</option>');
+                        } else {
+                            alert("statename not fetching");
+                           
+                        }
+                    },
+                    error: function (error) {
+                        alert("Failed to fetch StateName");   
+                    }
+                });
+            } else {
+                alert("Failed to fetch StateName ");
+            }
+        });
+        $('#btnload').click(function () {
+            LoadStudentData();
+        })
+    });
+</script>
+
+<div class="row">
+    <div class="col-lg-3"></div>
+    <div class="col-lg-7">
+        <div class="row">
+            <div class="col-lg-3"><label>StateID :</label></div>
+            <div class="col-lg-6"><input type="text" id="StateID" class="form-control" /></div>
+        </div><br />
+
+        <div class="row">
+            <div class="col-lg-3"><label>StateName :</label></div>
+            <div class="col-lg-7">
+                <select id="StateName" class="form-control">
+                    <option value="">-Select StateName-</option>
+                </select>
+            </div>
+        </div><br />
+
+        <div class="row">
+            <div class="col-lg-3"><label>DistrictName :</label></div>
+            <div class="col-lg-6"><input type="text" id="DistrictName" class="form-control" /></div>
+        </div><br />
+
+              <div class="col-lg-12" align="center">
+                  <input type="submit" value="Save" id="Districtsubmit" class="btn btn-primary" />
+                  <input align="center" class="btn btn-warning" type="submit" value="LoadStudentData" id="btnload" />
+
+              </div>
+    </div>
+    <div id="divlist"></div>
+    <div class="col-lg-2"></div>
+</div>

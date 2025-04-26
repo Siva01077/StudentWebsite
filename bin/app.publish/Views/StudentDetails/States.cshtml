@@ -1,0 +1,105 @@
+﻿@model Student_Website.Models.StateModel
+@using Student_Website.Models
+
+    <script>
+        function LoadStudentData() {
+            $.ajax({
+                url: '/StudentDetails/GetStatelist',
+                type: 'GET',
+                success: function (result) {
+                    $('#divlist').html(result);
+                },
+                error: function (error) {
+                    alert("load to fial data");
+                }
+            });
+        }
+        $(document).ready(function () {
+            $('#Statesubmit').click(function () {
+                var StateID = $('#StateID').val();
+                var StateName = $('#StateName').val();
+
+                // Validation
+                if (StateID == "") {
+                    alert("Enter state Id");
+                    return false;
+                } else if (StateName == "") {
+                    alert("Enter StateName");
+                    return false;
+                }
+
+                var Stateobj = {
+                    "StateID": StateID,
+                    "StateName": StateName
+
+                };
+                alert(
+                    "StateID :" + Stateobj.StateID + "\n" +
+                    "StateName:" + Stateobj.StateName
+
+                );
+
+                $.ajax({
+                    url: '@Url.Action("States", "StudentDetails")',
+                    data: JSON.stringify(Stateobj),
+                    type: "POST",
+                    datatype: "json",
+                    contentType: "application/json",
+                    success: function (result) {
+                        if (result.success) {
+                            alert("Data saved successfully");
+                            console.log("Submitted Data:", Stateobj);
+                            location.reload();
+                        }
+                        else {
+                            alert("Data not saved successfully");
+
+                        }
+                    },
+                    error: function (error) {
+
+                        alert("Data insertion failed. Check console for details.");
+                    }
+                });
+            });
+            $('#btnload').click(function () {
+                LoadStudentData();
+            })
+        });
+    </script>
+   
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-7">
+                <div class="row">
+                    <div class="col-lg-3" style="color:#4800ff">
+                        <label>StateID :</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="text" id="StateID" class="form-control" />
+                    </div>
+                    <div class="col-lg-4"></div>
+                </div> <br />
+                <div class="row">
+                    <div class="col-lg-3" style="color:#4800ff">
+                        <label>StateName :</label>
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="text" id="StateName"  class="form-control" />
+                    </div>
+                    <div class="col-lg-4"></div>
+                </div> <br />
+                       <div class="col-lg-12 " align="center">
+                           <input type="submit" class="btn btn-success" value="Save" id="Statesubmit" />
+                           <input align="center" class="btn btn-warning" type="submit" value="LoadStudentData" id="btnload" />
+
+                       </div>
+               <div id="divlist"></div>
+            <div class="col-lg-3"></div>
+
+        </div>
+            </div>
+    
+
+
+

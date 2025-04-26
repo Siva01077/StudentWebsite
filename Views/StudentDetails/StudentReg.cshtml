@@ -1,0 +1,237 @@
+﻿@model Student_Website.Models.StudentRegModel
+@using Student_Website.Models
+
+
+<script>
+    function LoadStudentData() {
+        $.ajax({
+            url: '/StudentDetails/GetStudentlist',
+            type: 'GET',
+            success: function (result) {
+                $('#divlist').html(result);
+            },
+            error: function () {
+                alert("Failed to load data.");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        // Load States
+        $.ajax({
+            url: '@Url.Action("GetStateslist", "StudentDetails")',
+            type: 'GET',
+            success: function (states) {
+                let stateOptions = '<option value="">-Select State-</option>';
+                for (let i = 0; i < states.length; i++) {
+                    stateOptions += `<option value="${states[i].StateID}" >${states[i].StateName}</option>`;
+                }
+                $('#State').html(stateOptions);
+            },
+            error: function () {
+                alert('Failed to load states.');
+            }
+        });
+
+        // Load Districts based on selected State
+        $('#State').change(function () {
+            var stateId = $('#State').val();
+            $.ajax({
+                url: '@Url.Action("GetDistrictslist", "StudentDetails")',
+                data: { StateID: stateId },
+                type: 'GET',
+                success: function (districts) {
+                    let districtOptions = '<option value="">-Select District-</option>';
+                    for (var i = 0; i < districts.length; i++) {
+                        districtOptions += `<option value="${districts[i].DistrictID}" data-name="${districts[i].DistrictName}">${districts[i].DistrictName}</option>`;
+                    }
+                    $('#District').html(districtOptions);
+                },
+                error: function () {
+                    alert('Failed to load districts.');
+                }
+            });
+        });
+
+        // Load Cities based on selected DistrictName (pass text)
+        $('#District').change(function () {
+            var districtName = $('#District option:selected').data('name');
+            $.ajax({
+                url: '@Url.Action("GetCitylist", "StudentDetails")',
+                data: { DistrictId: districtName },
+                type: 'GET',
+                success: function (cities) {
+                    let cityOptions = '<option value="">-Select City-</option>';
+                    for (var i = 0; i < cities.length; i++) {
+                        cityOptions += `<option value="${cities[i].CityID}" data-name="${cities[i].CityName}">${cities[i].CityName}</option>`;
+                    }
+                    $('#City').html(cityOptions);
+                },
+                error: function () {
+                    alert('Failed to load cities.');
+                }
+            });
+        });
+
+        // Submit form
+        $('#btnsubmit').click(function () {
+            var StudentName = $('#StudentName').val();
+            var Email = $('#Email').val();
+            var Phone = $('#Phone').val();
+            var Address = $('#Address').val();
+            var Gender = $('input[name="Gender"]:checked').val();
+            var State= parseInt($('#State').val(), 10);          
+            var District = parseInt($('#District').val(), 10);   
+            var City = parseInt($('#City').val(), 10); 
+          
+            // Validation
+            if (StudentName === "") { alert("Enter Student name"); return false; }
+            if (Email === "") { alert("Enter email"); return false; }
+            if (Phone === "" || isNaN(Phone)) { alert("Enter a valid phone"); return false; }
+            if (Address === "") { alert("Enter Address"); return false; }
+            if (!Gender) { alert("Select Gender"); return false; }
+            if (State === "") { alert("Select state"); return false; }
+            if (District === "") { alert("Select district"); return false; }
+            if (City === "") { alert("Select city"); return false; }
+
+            // Send data to controller
+            var studentobj = {
+                
+                "StudentName": StudentName,
+                "Email": Email,
+                "Phone": parseInt(Phone, 10),
+                "Address": Address,
+                "Gender": Gender,
+                "StateID": parseInt(State,10), // StateID
+                "DistrictID": parseInt(District, 10),
+                "CityID": parseInt(City,10)    // CityID
+            };
+
+            console.log("Sending to server:", studentobj);
+
+            $.ajax({
+                url: '@Url.Action("StudentReg", "StudentDetails")',
+                data: JSON.stringify(studentobj),
+                type: "POST",
+                datatype: "json",
+                contentType: "application/json",
+                success: function (result) {
+                    if (result.success) {
+                        alert("Data saved successfully");
+                        location.reload();
+                    } else {
+                        alert("Data not saved successfully");
+                    }
+                },
+                error: function () {
+                    alert("Data insertion failed.");
+                }
+            });
+        });
+
+        $('#btnload').click(function () {
+            LoadStudentData();
+        });
+
+    });
+</script>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 col-sm-3"></div>
+        <div class="col-lg-7 col-sm-7">
+            <!-- Form Fields -->
+            <div class="row">
+                <div class="col-lg-3"><label>StudentName :</label></div>
+                <div class="col-lg-7">
+                    <input type="text" id="StudentName" class="form-control" />
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-3"><label>Email :</label></div>
+                <div class="col-lg-7">
+                    <input type="text" id="Email" class="form-control" />
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-3"><label>Phone :</label></div>
+                <div class="col-lg-7">
+                    <input type="text" id="Phone" class="form-control" />
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-3"><label>Gender :</label></div>
+                <div class="col-lg-7">
+                    <div class="d-flex">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Gender" id="radMale" value="M" />
+                            <label class="form-check-label" for="radMale">
+                                Male
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Gender" id="radFemale" value="F" />
+                            <label class="form-check-label" for="radFemale">
+                                Female
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-3"><label>Address :</label></div>
+                <div class="col-lg-7">
+                    <textarea class="form-control" id="Address"></textarea>
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-3"><label>State :</label></div>
+                <div class="col-lg-7">
+                    @Html.DropDownList("State", (SelectList)ViewBag.States, "-Select State-", new { @class = "form-control", @id = "State" })
+
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-3"><label>District :</label></div>
+                <div class="col-lg-7">
+                    <select id="District" class="form-control" style="appearance: auto; -webkit-appearance: auto; -moz-appearance: menulist;">
+                        <option value="">-Select District-</option>
+                    </select>
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-3"><label>City :</label></div>
+                <div class="col-lg-7">
+                    <select id="City" class="form-control" style="appearance: auto; -webkit-appearance: auto; -moz-appearance: menulist;">
+                        <option value="">-Select City-</option>
+                    </select>
+                </div>
+            </div><br />
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="btn-group-toggle" data-toggle="buttons">
+                        <label>
+                            <input type="checkbox" checked> I accepted terms and conditions
+                        </label>
+                    </div>
+                </div>
+            </div><br /><br />
+
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <input align="center" class="btn btn-primary" type="submit" value="Register" id="btnsubmit">
+
+                    <input align="center" class="btn btn-warning" type="submit" value="LoadEmployeeData" id="btnload" />
+
+                </div>
+            </div><br />
+            <div id="divlist"></div>
+        </div>
+        <div class="col-lg-2 col-sm-2"></div>
+    </div>
+</div>
+
+
+
